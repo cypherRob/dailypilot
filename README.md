@@ -9,6 +9,7 @@ DailyPilot is your all-in-one productivity hub and offline-first mobile app. Sea
   <img src="assets/screenshots/Note.png" width="200" alt="Private Notes" />
   <img src="assets/screenshots/Note%20Writing.png" width="200" alt="New Note Editor" />
   <img src="assets/screenshots/Profile.png" width="200" alt="Profile Settings & Theming" />
+  <img src="assets/screenshots/common.png" width="200" alt="Public Note session for an Online chat on a specific topic." />
 </div>
 
 ## Features
