@@ -1,0 +1,74 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    match /live_profiles/{userId} {
+      allow read: if signedIn();
+      allow write: if signedIn()
+        && userId == request.auth.uid
+        && request.resource.data.username is string
+        && request.resource.data.username.size() > 0
+        && request.resource.data.username.size() <= 80
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 3
+        && request.resource.data.email.size() <= 254;
+    }
+
+    match /live_rooms/{roomId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 120
+        && request.resource.data.description is string
+        && request.resource.data.description.size() <= 500
+        && request.resource.data.category is string
+        && request.resource.data.category.size() <= 80
+        && request.resource.data.memberCount == 0
+        && request.resource.data.isActive == true;
+      allow update: if false;
+      allow delete: if signedIn()
+        && resource.data.createdBy == request.auth.uid;
+
+      match /messages/{messageId} {
+        allow read: if signedIn();
+        allow create: if signedIn()
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.senderName is string
+          && (!('senderProfileImageUrl' in request.resource.data)
+            || request.resource.data.senderProfileImageUrl is string)
+          && request.resource.data.timestamp is number
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 2000
+          && request.resource.data.isAudio is bool
+          && (!('audioUrl' in request.resource.data)
+            || request.resource.data.audioUrl is string);
+        allow update, delete: if false;
+      }
+      
+      match /presence/{userId} {
+        allow read: if signedIn();
+        allow write: if signedIn() && request.auth.uid == userId;
+      }
+
+      match /joined_members/{userId} {
+        allow read: if signedIn();
+        allow write: if signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.userId == request.auth.uid
+          && request.resource.data.username is string
+          && request.resource.data.username.size() > 0
+          && request.resource.data.username.size() <= 80
+          && (!('profileImageUrl' in request.resource.data)
+            || request.resource.data.profileImageUrl is string)
+          && request.resource.data.interactionCount is number;
+      }
+    }
+  }
+}
