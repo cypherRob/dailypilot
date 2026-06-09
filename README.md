@@ -2,6 +2,9 @@
 
 DailyPilot is your all-in-one productivity hub and offline-first mobile app. Seamlessly manage tasks, track habits, monitor expenses, and organize your notes—all in a beautiful, modern interface.
 
+#Download the android app:
+- [APK](https://drive.google.com/file/d/1rO0606NVS4sGORGJg5wjtN1PdgT8xAO6/view?usp=sharing)
+
 ## Screenshots
 
 <div style="display: flex; flex-direction: row; gap: 10px;">
