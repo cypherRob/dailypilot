@@ -1,0 +1,74 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: apk
+            build_command: flutter build apk --release
+            artifact_path: build/app/outputs/flutter-apk/app-release.apk
+            artifact_name: dailypilot-android.apk
+          - os: ubuntu-latest
+            target: web
+            build_command: flutter build web --release
+            artifact_path: build/web
+            artifact_name: dailypilot-web
+          - os: windows-latest
+            target: windows
+            build_command: flutter build windows --release
+            artifact_path: build/windows/x64/runner/Release
+            artifact_name: dailypilot-windows
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build
+        run: ${{ matrix.build_command }}
+
+      - name: Archive Web Build
+        if: matrix.target == 'web'
+        run: tar -czf dailypilot-web.tar.gz -C build/web .
+
+      - name: Archive Windows Build
+        if: matrix.target == 'windows'
+        run: Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath dailypilot-windows.zip
+
+      - name: Upload APK Artifact
+        if: matrix.target == 'apk'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
+
+      - name: Upload Web Artifact
+        if: matrix.target == 'web'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: dailypilot-web.tar.gz
+
+      - name: Upload Windows Artifact
+        if: matrix.target == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: dailypilot-windows.zip
