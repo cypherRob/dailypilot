@@ -131,4 +131,4 @@ You can add your preferred license here, such as MIT License.
 
 Created by **Judicael Beyonce Mabondzot**
 
-GitHub: [@mabondzotjudi](https://github.com/cypherRob)
+GitHub: [@cypherRob](https://github.com/cypherRob)
